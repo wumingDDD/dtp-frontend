@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# 动态线程池监控面板
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+基于 React + TypeScript + Vite 的线程池监控前端面板，实时展示线程池状态、监控指标、健康状态，支持动态调整线程池参数。
 
-Currently, two official plugins are available:
+## 功能特性
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **线程池列表** - 查看所有已注册线程池
+- **实时监控** - 核心/最大线程数、活跃线程、队列大小、负载因子等
+- **健康状态** - 负载等级（LOW/MEDIUM/HIGH/CRITICAL）直观展示
+- **动态调整** - 运行时调整核心线程数和最大线程数
+- **自动刷新** - 支持 3s / 5s / 10s / 30s 自动刷新
+- **测试任务** - 向线程池提交测试任务验证负载
 
-## React Compiler
+## 快速开始
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# 安装依赖
+npm install
 
-## Expanding the ESLint configuration
+# 开发模式
+npm run dev
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 生产构建
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 配置
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+前端默认代理到 `http://localhost:8080`，如需修改请编辑 `vite.config.ts`：
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
+```ts
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://localhost:8080', // 修改为你的后端地址
+      changeOrigin: true,
     },
   },
-])
+},
 ```
+
+## API 接口
+
+后端需提供以下接口（详见 `api-doc.md`）：
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/threadpool/monitor/all` | GET | 获取所有线程池监控指标 |
+| `/api/threadpool/monitor/{name}` | GET | 获取指定线程池监控指标 |
+| `/api/threadpool/health/{name}` | GET | 获取线程池健康状态 |
+| `/api/threadpool/update/{name}` | POST | 更新线程池参数 |
+| `/api/threadpool/delete/{name}` | DELETE | 删除线程池 |
+| `/api/threadpool/test/{name}` | POST | 向指定线程池提交测试任务 |
+| `/api/threadpool/test` | POST | 向所有线程池提交测试任务 |
+
+## 技术栈
+
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide React（图标）
